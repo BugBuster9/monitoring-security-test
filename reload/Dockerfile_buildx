@@ -1,0 +1,15 @@
+<<<<<<< HEAD
+FROM golang:1.17 as builder
+=======
+FROM golang:1.25 as builder
+>>>>>>> b72059e (chore: bump Golang and go mod for security (#962))
+WORKDIR /app
+COPY go.mod go.sum ./
+COPY reload ./reload
+RUN CGO_ENABLED=0 go build -v ./reload/main.go
+
+FROM busybox:1.37.0
+COPY --from=builder /app/main  /bin/reload
+ENTRYPOINT [ "/bin/reload" ]
+CMD        [ "--watch-path=/etc/prometheus/rules", \
+             "--prometheus-url=http://127.0.0.1:9090" ]
